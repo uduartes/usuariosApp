@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ventasapp-b26cd": {
+      "hosting": {
+        "usuariosApp": [
+          "ventasapp-b26cd"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ventasapp-b26cd"
+  }
+}

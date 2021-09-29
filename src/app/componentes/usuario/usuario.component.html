@@ -1,0 +1,297 @@
+<div class="card">
+  
+  <div class="card-header">
+    <h5>Lista de usurios registrados</h5>
+  </div>
+  <div class="card-body">
+
+    <table class="table table-striped table-hover cursorPointer">
+      <thead>
+        <tr>
+          <th class="col-md-1">ID</th>
+          <th>Nombre</th>
+          <th class="col-md-2">Correo</th>
+          <th class="col-md-2">Contraseña</th>
+          <th class="celda25"></th>
+          <th class="celda25"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let usuario of lista_usuarios ; let i = index"
+          [attr.data-index]="i"
+          placement="left"
+          ngbTooltip="Clic para consultar roles"
+        >
+          <td (click)="abrirModalRoles(modalRoles, usuario)">
+            {{ usuario.usuario_id }}
+          </td>
+          <td
+            class="font-weight-bold"
+            (click)="abrirModalRoles(modalRoles, usuario)"
+          >
+            {{ usuario.nombres }}
+          </td>
+          <td (click)="abrirModalRoles(modalRoles, usuario)">
+            {{ usuario.correo }}
+          </td>
+          <td (click)="abrirModalRoles(modalRoles, usuario)">
+            {{ usuario.contrasena }}
+            
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-success"
+              (click)="abrirModalEditarUsuario(modalEditarUsuario, usuario)"
+            >
+              <i class="fa fa-edit"></i>
+            </button>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="abrirModalConfirma(modalConfirmar, usuario)"
+            >
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<ng-template #modalConfirmar let-c="close" let-d="dismiss">
+  <div class="modal-header d-flex align-items-center">
+    <span class="h5 m-0"
+      ><i class="fa fa-chalkboard-user mr-1"></i>Eliminar usuario</span
+    >
+    <button class="close d-flex text-dark m-0 p-0" (click)="d('Cross click')">
+      X
+    </button>
+  </div>
+
+  <div class="modal-body">
+    Estas seguro de eliminar al usuario {{ usuario.nombres }}?
+  </div>
+  <div class="modal-footer">
+    <div class="d-flex flex-row-reverse">
+      <div class="p-2">
+        <button
+          class="btn btn-success"
+          (click)="borrarUsuario(modalConfirmar, usuario.usuario_id)"
+        >
+          Confirmar
+        </button>
+      </div>
+      <div class="p-2">
+        <button type="button" class="btn btn-danger" (click)="c('Close')">
+          Cancelar
+        </button>
+      </div>
+      <div class="p-2 mt-1 float-left">
+        ID: {{ usuario.usuario_id }} {{ usuario.fecha_registro }}
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalRoles let-modal>
+  <div class="modal-header d-flex align-items-center">
+    <span class="h5 m-0"
+      ><i class="fa fa-chalkboard-user mr-1"></i>Roles del usuario -
+      {{ usuario.nombres }}</span
+    >
+    <button
+      class="close d-flex text-dark m-0 p-0"
+      (click)="modal.dismiss('Cross click')"
+    >
+      X
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <p class="text-danger" *ngIf="!usuario.roles">Sin roles registrados</p>
+
+    <table
+      class="table table-striped"
+      *ngIf="usuario.roles && usuario.roles.length > 0"
+    >
+      <thead>
+        <tr>
+          <th>Rol</th>
+          <th>Nombre</th>
+          <th>Ruta</th>
+        </tr>
+      </thead>
+      <thead>
+        <tr *ngFor="let rol of usuario.roles">
+          <td>{{ rol.rol_id }}</td>
+          <td>{{ rol.nombre }}</td>
+          <td
+            [ngClass]="
+              !rol.ruta || rol.ruta == '' ? 'text-danger' : 'text-success'
+            "
+          >
+            {{ !rol.ruta || rol.ruta == "" ? "Sin ruta" : rol.ruta }}
+          </td>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="modal.dismiss('Close')"
+    >
+      Cerrar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalEditarUsuario let-c="close" let-d="dismiss">
+  <form #frmEditarUsuario="ngForm" class="form-enable">
+    <div class="modal-header d-flex align-items-center">
+      <span class="h5 m-0"
+        ><i class="fa fa-chalkboard-user mr-1"></i>Editar Usuario |
+        {{ usuario.nombres }}
+      </span>
+      <button class="close d-flex text-dark m-0 p-0" (click)="d('Cross click')">
+        X
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nombres:</label>
+        <input
+          name="inp_nombres"
+          #inp_nombres="ngModel"
+          type="text"
+          class="form-control"
+          [(ngModel)]="usuario.nombres"
+          required="true"
+        />
+        <div>
+          <span class="text-danger" *ngIf="inp_nombres.invalid"
+            >*El nombre es obligatorio</span
+          >
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Correo:</label>
+        <input
+          name="inp_correo"
+          #inp_correo="ngModel"
+          type="text"
+          class="form-control"
+          [(ngModel)]="usuario.correo"
+          required="true"
+        />
+        <div>
+          <span class="text-danger" *ngIf="inp_correo.invalid"
+            >*El correo es obligatorio</span
+          >
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Nueva contraseña:</label>
+        <input
+          name="inp_password"
+          #inp_password="ngModel"
+          type="password"
+          class="form-control"
+          [(ngModel)]="usuario.contrasena"
+          (keypress)="keyPress($event)"
+          required="true"
+        />
+        <div>
+          <span class="text-danger" *ngIf="inp_password.invalid"
+            >*La contraseña es obligatoria</span
+          >
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confirmar contraseña:</label>
+        <input
+          name="inp_contrasena_confirmar"
+          type="password"
+          class="form-control"
+          [(ngModel)]="contrasena_confirmar"
+          (keypress)="keyPress($event)"
+          required="true"
+        />
+        <div>
+          <span class="text-danger">{{ mensaje_contrasena }}</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-5">
+            <label>Roles:</label>
+            <select
+              name="inp_select_roles"
+              class="form-control"
+              size="5"
+              [(ngModel)]="rol_seleccionado"
+            >
+              <option *ngFor="let rol of roles" [ngValue]="rol">
+                {{ rol.nombre }}
+              </option>
+            </select>
+            <button class="btn btn-success btn-block" (click)="addRol()">
+              Añadir rol
+            </button>
+          </div>
+          <div class="col-1"></div>
+          <div class="col-6 mt-0 pt-0">
+            <label>Rol seleccionado</label>
+            <table class="table table-sm mt-0 pt-0" *ngIf="roles_seleccionados.length > 0">
+              <tbody>
+                <tr *ngFor="let rol of roles_seleccionados; let i = index">
+                  <td>
+                    {{ rol.nombre }}
+                  </td>
+                  <td class="text-center">
+                    <button class="btn btn-danger" (click)="quitarRol(i)">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p *ngIf="roles_seleccionados.length == 0" class="text-danger">
+              Debes seleccionar un rol
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="d-flex flex-row-reverse">
+        <div class="p-2">
+          <button
+            class="btn btn-success"
+            (click)="editarUsuario(frmEditarUsuario, modalEditarUsuario)"
+            [disabled]="frmEditarUsuario.invalid || passwordDif()"
+          >
+            Actualizar
+          </button>
+        </div>
+        <div class="p-2">
+          <button type="button" class="btn btn-danger" (click)="c('Close')">
+            Cancelar
+          </button>
+        </div>
+        <div class="p-2 mt-1 float-left">
+          ID: {{ usuario.usuario_id }} {{ usuario.fecha_registro }}
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>
